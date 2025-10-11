@@ -12,8 +12,8 @@ AI-powered codebase analyzer using Groq (Llama 3.3 70B) and GitHub API with Fast
 
 ## Backend Microservices at
 
-PR Review Agent - https://github.com/Rakshit-gen/agent-prm
-Codebase Review Agent - https://github.com/Rakshit-gen/agent-code-manage
+- PR Review Agent - https://github.com/Rakshit-gen/agent-prm
+- Codebase Review Agent - https://github.com/Rakshit-gen/agent-code-manage
 
 ## Setup
 
