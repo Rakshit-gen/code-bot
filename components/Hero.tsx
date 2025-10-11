@@ -25,17 +25,9 @@ export default function Hero({ onGetStarted }: HeroProps) {
         </div>
         
         <p className="text-slate-400 text-2xl font-normal tracking-wide mb-12 max-w-3xl mx-auto">
-          AI-powered code analysis that finds bugs, security issues, and performance improvements in your pull requests
+          AI-powered code analysis that finds bugs, security issues, and performance improvements in your pull requests and codebase
         </p>
         
-        <Button
-          onClick={onGetStarted}
-          size="lg"
-          className="group bg-transparent hover:bg-transparent px-6 py-4 border-2 border-blue-500/50 hover:border-purple-500/70 rounded-3xl text-white text-xl font-bold shadow-[0_20px_60px_-5px_rgba(59,130,246,0.6),inset_0_1px_0_0_rgba(255,255,255,0.2)] transition-all duration-300 tracking-wide h-auto"
-        >
-          Get Started 
-          <ArrowRight className="ml-4" size={24} strokeWidth={2.5} />
-        </Button>
       </div>
     </div>
   )

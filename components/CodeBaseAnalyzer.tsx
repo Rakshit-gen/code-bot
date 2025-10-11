@@ -308,7 +308,7 @@ export default function CodebaseAnalyzerPage({ onBack }: CodebaseAnalyzerPagePro
               <Alert className="bg-blue-500/10 border-blue-500/30 text-blue-300">
                 <Info className="h-4 w-4" />
                 <AlertDescription className="ml-2">
-                  💡 Analysis typically takes 30-60 seconds depending on repository size
+                  💡 Analysis typically takes 45-60 seconds depending on repository size
                 </AlertDescription>
               </Alert>
             )}
