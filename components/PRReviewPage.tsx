@@ -191,7 +191,7 @@ export default function PRReviewPage({ onBack }: PRReviewPageProps) {
         <div className="text-center mb-16">
           <div className="flex items-center justify-center gap-4 md:gap-6 mb-6 flex-wrap">
             <Sparkles className="text-blue-400 animate-pulse" size={42} strokeWidth={2.5} />
-            <h1 className="text-4xl md:text-7xl font-semibold bg-gradient-to-r from-white via-blue-400 via-purple-400 to-white bg-clip-text text-transparent tracking-tight">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-white via-purple-400 to-white bg-clip-text text-transparent">
               Analyze Pull Request
             </h1>
             <Sparkles className="text-purple-400 animate-pulse" size={42} strokeWidth={2.5} />
@@ -213,7 +213,7 @@ export default function PRReviewPage({ onBack }: PRReviewPageProps) {
                 <GitPullRequest size={32} className="text-blue-400" strokeWidth={2.5} />
               </div>
               <div>
-                <CardTitle className="text-3xl md:text-4xl font-semibold bg-gradient-to-r from-white to-indigo-200 bg-clip-text text-transparent">
+                <CardTitle className="text-4xl font-bold bg-gradient-to-r from-white via-purple-400 to-white bg-clip-text text-transparent">
                   Repository Details
                 </CardTitle>
                 <CardDescription className="text-slate-400 mt-2">
