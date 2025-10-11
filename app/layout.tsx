@@ -4,6 +4,9 @@ import type { Metadata } from "next"
 export const metadata: Metadata = {
   title: "AI PR Review Agent",
   description: "AI-powered ruthless PR review tool built with FastAPI & Next.js",
+  icons: {
+    icon: "/dp.png"
+  }
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
