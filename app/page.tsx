@@ -36,7 +36,7 @@ export default function Home() {
         <p style={{ marginTop: '0.5rem', fontSize: '1rem', color: '#ccc' }}>
             Aegis requires a desktop environment for optimal performance. 
   The AI agents perform large-scale code analysis and render complex 
-  developer interfaces that are&apos;nt supported on mobile devices. 
+  developer interfaces that aren&apos;t supported on mobile devices. 
   Please open this app on a desktop browser.
         </p>
       </div>
