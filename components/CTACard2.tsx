@@ -36,7 +36,7 @@ export default function CTACard2({ onClick }: CodebaseAnalyzerCTACardProps) {
         </CardDescription>
         
         <div className="inline-flex items-center gap-3 text-purple-400 text-lg font-bold">
-          Start Analysis Now 
+          Analyse codebase Now 
           <ArrowRight 
             size={24} 
             strokeWidth={2.5} 
