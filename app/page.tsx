@@ -32,7 +32,7 @@ export default function Home() {
           padding: '2rem',
         }}
       >
-        <h1 style={{ fontSize: '1.8rem', fontWeight: 700 }}>Can&apos;t use on mobile</h1>
+        <h1 style={{ fontSize: '1.8rem', fontWeight: 700 }}>Can&apos;t use on mobile :(</h1>
         <p style={{ marginTop: '0.5rem', fontSize: '1rem', color: '#ccc' }}>
             Aegis requires a desktop environment for optimal performance. 
   The AI agents perform large-scale code analysis and render complex 
