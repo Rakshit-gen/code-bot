@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import Homepage from '@/components/Homepage'
+import Homepage from '@/components/HomePage'
 import PRReviewPage from '@/components/PRReviewPage'
 
 export default function Home() {
