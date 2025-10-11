@@ -190,10 +190,11 @@ export default function CodebaseAnalyzerPage({ onBack }: CodebaseAnalyzerPagePro
         {/* Back Button */}
         <Button
           onClick={onBack}
-          variant="outline"
-          className="mb-8 bg-slate-800/80 border-slate-700/20 text-slate-400 hover:bg-slate-800 hover:text-white rounded-2xl px-6 py-3 transition-all duration-300"
+          variant="ghost"
+          className="mb-8 text-slate-400 hover:text-white hover:bg-slate-800/50"
         >
-          ← Back to Home
+          <ArrowLeft className="mr-2" size={20} />
+          Back to Dashboard
         </Button>
 
         {/* Main Card */}
@@ -308,7 +309,7 @@ export default function CodebaseAnalyzerPage({ onBack }: CodebaseAnalyzerPagePro
               <Alert className="bg-blue-500/10 border-blue-500/30 text-blue-300">
                 <Info className="h-4 w-4" />
                 <AlertDescription className="ml-2">
-                  💡 Analysis typically takes 45-60 seconds depending on repository size
+                  💡 Analysis typically takes 10-30 seconds depending on repository size
                 </AlertDescription>
               </Alert>
             )}
@@ -338,6 +339,10 @@ export default function CodebaseAnalyzerPage({ onBack }: CodebaseAnalyzerPagePro
                     <Badge variant="outline" className="bg-slate-800/50 text-slate-300 border-slate-700/50 px-3 py-1">
                       <GitBranch size={14} className="mr-2" />
                       {result.repository}
+                    </Badge>
+                    <Badge variant="outline" className="bg-slate-800/50 text-slate-300 border-slate-700/50 px-3 py-1">
+                      <FileCode size={14} className="mr-2" />
+                      {result.files_analyzed} files
                     </Badge>
                     <Badge variant="outline" className="bg-slate-800/50 text-slate-300 border-slate-700/50 px-3 py-1">
                       <TrendingUp size={14} className="mr-2" />
