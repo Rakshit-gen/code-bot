@@ -2,8 +2,8 @@ import "./globals.css"
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "AI PR Review Agent",
-  description: "AI-powered ruthless PR review tool built with FastAPI & Next.js",
+  title: "AI Review Agent",
+  description: "AI-powered ruthless PR and codebase review tool built with FastAPI & Next.js",
   icons: {
     icon: "/dp.png"
   }
