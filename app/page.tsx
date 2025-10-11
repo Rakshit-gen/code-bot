@@ -1,3 +1,5 @@
+'use client'
+
 import { useState } from 'react'
 import { Loader2, FileCode, AlertTriangle, CheckCircle2, ExternalLink, GitPullRequest, Sparkles, Hash, Zap, Code2, ShieldAlert } from 'lucide-react'
 
