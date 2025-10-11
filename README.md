@@ -10,6 +10,11 @@ AI-powered codebase analyzer using Groq (Llama 3.3 70B) and GitHub API with Fast
 - **FastAPI**: High-performance async API with automatic OpenAPI docs
 - **Groq LLM**: Lightning-fast inference with Llama 3.3 70B
 
+## Backend Microservices at
+
+PR Review Agent - https://github.com/Rakshit-gen/agent-prm
+Codebase Review Agent - https://github.com/Rakshit-gen/agent-code-manage
+
 ## Setup
 
 ### 1. Environment Variables
