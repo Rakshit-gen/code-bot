@@ -14,7 +14,7 @@ export default function Hero({ onGetStarted }: HeroProps) {
         <div className="flex items-center justify-center gap-6 mb-8">
           <Sparkles className="text-blue-400 animate-pulse" size={48} strokeWidth={2.5} />
           <h1 className="text-8xl font-semibold bg-gradient-to-r from-white via-blue-400 via-purple-400 to-white bg-clip-text text-transparent tracking-tight drop-shadow-[0_0_80px_rgba(59,130,246,0.4)]">
-            AI Agent
+            Aegis
           </h1>
           <Sparkles 
             className="text-purple-400 animate-pulse" 
@@ -25,8 +25,8 @@ export default function Hero({ onGetStarted }: HeroProps) {
         </div>
         
         <p className="text-slate-400 text-2xl font-normal tracking-wide mb-12 max-w-3xl mx-auto">
-          AI-powered code analysis that finds bugs, security issues, and performance improvements in your pull requests and codebase
-        </p>
+          AI-powered code intelligence that detects bugs, security vulnerabilities, and performance bottlenecks across your pull requests and codebase.
+          </p>
         
       </div>
     </div>

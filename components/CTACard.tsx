@@ -25,7 +25,7 @@ export default function CTACard({ onClick }: CTACardProps) {
           <GitPullRequest size={64} className="text-blue-400" strokeWidth={2.5} />
         </div>
         
-        <CardTitle className="text-5xl font-semibold bg-gradient-to-r from-white via-blue-400 via-purple-400 to-white bg-clip-text text-transparent mb-4">
+        <CardTitle className="text-4xl font-semibold bg-gradient-to-r from-white via-blue-400 via-purple-400 to-white bg-clip-text text-transparent mb-4">
           Start Reviewing PRs
         </CardTitle>
       </CardHeader>
