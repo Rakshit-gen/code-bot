@@ -188,18 +188,6 @@ export default function PRReviewPage({ onBack }: PRReviewPageProps) {
           ← Back to Home
         </Button>
 
-        <div className="text-center mb-16">
-          <div className="flex items-center justify-center gap-4 md:gap-6 mb-6 flex-wrap">
-            <Sparkles className="text-blue-400 animate-pulse" size={42} strokeWidth={2.5} />
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-white via-purple-400 to-white bg-clip-text text-transparent">
-              Analyze Pull Request
-            </h1>
-            <Sparkles className="text-purple-400 animate-pulse" size={42} strokeWidth={2.5} />
-          </div>
-          <p className="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto">
-            Enter your repository details to get instant AI-powered feedback on code quality, security, and performance
-          </p>
-        </div>
 
         {/* Input Card */}
         <Card
