@@ -1,5 +1,4 @@
-import { Sparkles, ArrowRight } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { Sparkles } from 'lucide-react'
 import { TypewriterEffect } from './ui/typewriter-effect'
 
 interface HeroProps {
