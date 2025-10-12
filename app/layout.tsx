@@ -1,5 +1,6 @@
 import "./globals.css"
 import type { Metadata } from "next"
+import { BackgroundBeamsWithCollision } from "@/components/ui/background-beams-with-collision"
 
 export const metadata: Metadata = {
   title: "Aegis",
@@ -18,6 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         minHeight: "100%",
       }}
     >
+
       <body
         className="min-h-screen text-white bg-transparent"
         style={{
@@ -25,7 +27,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           overflowX: "hidden",
         }}
       >
-        {children}
+        <BackgroundBeamsWithCollision>
+          {children}
+        </BackgroundBeamsWithCollision>
       </body>
     </html>
   )

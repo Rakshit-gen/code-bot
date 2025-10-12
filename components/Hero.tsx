@@ -1,9 +1,22 @@
 import { Sparkles, ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { TypewriterEffect } from './ui/typewriter-effect'
 
 interface HeroProps {
   onGetStarted: () => void
 }
+
+const words = [
+  { text: "Empower", className: "bg-gradient-to-r from-indigo-400 to-purple-500 bg-clip-text text-transparent" },
+  { text: "developers", className: "bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent" },
+  { text: "to", className: "text-gray-400" },
+  { text: "ship", className: "bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent" },
+  { text: "flawless", className: "bg-gradient-to-r from-orange-400 to-yellow-400 bg-clip-text text-transparent" },
+  { text: "code", className: "bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent animate-pulse" },
+  { text: "with", className: "text-gray-400" },
+  { text: "Aegis", className: "bg-gradient-to-r from-blue-500 via-cyan-400 to-sky-500 bg-clip-text text-transparent animate-text-flow" },
+];
+
 
 export default function Hero({ onGetStarted }: HeroProps) {
   return (
@@ -24,9 +37,7 @@ export default function Hero({ onGetStarted }: HeroProps) {
           />
         </div>
         
-        <p className="text-slate-400 text-2xl font-normal tracking-wide mb-12 max-w-3xl mx-auto">
-          AI-powered code intelligence that detects bugs, security vulnerabilities, and performance bottlenecks across your pull requests and codebase.
-          </p>
+        <TypewriterEffect className='mt-10' words={words} />
         
       </div>
     </div>

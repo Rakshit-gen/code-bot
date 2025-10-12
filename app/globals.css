@@ -37,6 +37,17 @@
     0%, 100% { opacity: 0.5; }
     50% { opacity: 1; }
   }
+  @keyframes text-flow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animate-text-flow {
+  background-size: 200% auto;
+  animation: text-flow 3s linear infinite;
+}
+
   
   @keyframes shimmer {
     0% { background-position: -200% 0; }

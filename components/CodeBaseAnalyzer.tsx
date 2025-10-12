@@ -191,10 +191,10 @@ export default function CodebaseAnalyzerPage({ onBack }: CodebaseAnalyzerPagePro
         <Button
           onClick={onBack}
           variant="ghost"
-          className="mb-8 text-slate-400 hover:text-white hover:bg-slate-800/50"
+          className="mb-8 bg-slate-800/80 border-slate-700/20 text-slate-400 hover:bg-slate-800 hover:text-white rounded-2xl px-6 py-3 transition-all duration-300"
         >
           <ArrowLeft className="mr-2" size={20} />
-          Back to Dashboard
+          Back to Home
         </Button>
 
         {/* Main Card */}
@@ -309,7 +309,7 @@ export default function CodebaseAnalyzerPage({ onBack }: CodebaseAnalyzerPagePro
               <Alert className="bg-blue-500/10 border-blue-500/30 text-blue-300">
                 <Info className="h-4 w-4" />
                 <AlertDescription className="ml-2">
-                  💡 Analysis typically takes 10-30 seconds depending on repository size
+                  💡 Analysis typically takes 45-60 seconds depending on repository size
                 </AlertDescription>
               </Alert>
             )}
@@ -321,7 +321,7 @@ export default function CodebaseAnalyzerPage({ onBack }: CodebaseAnalyzerPagePro
           <Alert className="bg-red-500/10 border-red-500/30 text-red-300 mb-8">
             <Shield className="h-4 w-4" />
             <AlertDescription className="ml-2">
-              <strong>Error:</strong> {error}
+              <strong>Some Error Occurred, Please try again later</strong>
             </AlertDescription>
           </Alert>
         )}
