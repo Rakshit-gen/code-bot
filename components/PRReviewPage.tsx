@@ -30,7 +30,8 @@ const PRReviewPage = memo(function PRReviewPage() {
   const [progress, setProgress] = useState<AgentProgress[]>([])
   const [taskId, setTaskId] = useState<string | null>(null)
 
-  const API = 'https://agent-prm.onrender.com'
+  // const API = 'https://agent-prm.onrender.com'
+  const API = 'http://localhost:8000'
 
   const agentIcons: Record<string, any> = {
     'SecurityAgent': Shield,
