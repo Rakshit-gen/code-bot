@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, memo, useEffect } from 'react'
+import { useState, memo, useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import { GitPullRequest, Loader2, ExternalLink, CheckCircle2, AlertCircle, Info, TrendingUp, Clock, ArrowLeft, Shield, Zap, Building2, Code, Users } from 'lucide-react'
+import { GitPullRequest, Loader2, ExternalLink, CheckCircle2, AlertCircle, Info, TrendingUp, Clock, ArrowLeft, Shield, Zap, Building2, Code, Users, Filter, Search, X, BarChart3, PieChart } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -29,6 +29,11 @@ const PRReviewPage = memo(function PRReviewPage() {
   const [error, setError] = useState<string | null>(null)
   const [progress, setProgress] = useState<AgentProgress[]>([])
   const [taskId, setTaskId] = useState<string | null>(null)
+  const [filterAgent, setFilterAgent] = useState<string>('all')
+  const [filterSeverity, setFilterSeverity] = useState<string>('all')
+  const [filterType, setFilterType] = useState<string>('all')
+  const [searchQuery, setSearchQuery] = useState<string>('')
+  const [sortBy, setSortBy] = useState<string>('severity')
 
   const API = 'https://agent-prm.onrender.com'
   // const API = 'http://localhost:8000'
@@ -236,6 +241,117 @@ const PRReviewPage = memo(function PRReviewPage() {
     }))
   }
 
+  // Get all unique issue types
+  const getAllIssueTypes = () => {
+    if (!result?.files) return []
+    const types = new Set<string>()
+    result.files.forEach((file: any) => {
+      file.issues?.forEach((issue: any) => {
+        if (issue.type) types.add(issue.type)
+      })
+    })
+    return Array.from(types)
+  }
+
+  // Get issues by type
+  const getIssuesByType = () => {
+    if (!result?.files) return {}
+    const typeCounts: Record<string, number> = {}
+    result.files.forEach((file: any) => {
+      file.issues?.forEach((issue: any) => {
+        const type = issue.type || 'unknown'
+        typeCounts[type] = (typeCounts[type] || 0) + 1
+      })
+    })
+    return typeCounts
+  }
+
+  // Filtered and sorted files
+  const filteredFiles = useMemo(() => {
+    if (!result?.files) return []
+    
+    let filtered = [...result.files]
+    
+    // Filter by agent
+    if (filterAgent !== 'all') {
+      filtered = filtered.map((file: any) => ({
+        ...file,
+        issues: file.issues?.filter((issue: any) => 
+          issue.detected_by === filterAgent
+        ) || []
+      })).filter((file: any) => file.issues.length > 0)
+    }
+    
+    // Filter by severity
+    if (filterSeverity !== 'all') {
+      filtered = filtered.map((file: any) => ({
+        ...file,
+        issues: file.issues?.filter((issue: any) => {
+          const severity = issue.severity || issue.impact || ''
+          return severity.toLowerCase() === filterSeverity.toLowerCase()
+        }) || []
+      })).filter((file: any) => file.issues.length > 0)
+    }
+    
+    // Filter by type
+    if (filterType !== 'all') {
+      filtered = filtered.map((file: any) => ({
+        ...file,
+        issues: file.issues?.filter((issue: any) => 
+          issue.type?.toLowerCase() === filterType.toLowerCase()
+        ) || []
+      })).filter((file: any) => file.issues.length > 0)
+    }
+    
+    // Search filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase()
+      filtered = filtered.map((file: any) => ({
+        ...file,
+        issues: file.issues?.filter((issue: any) => 
+          issue.description?.toLowerCase().includes(query) ||
+          issue.suggestion?.toLowerCase().includes(query) ||
+          file.name.toLowerCase().includes(query)
+        ) || []
+      })).filter((file: any) => file.issues.length > 0)
+    }
+    
+    // Sort files
+    filtered.sort((a: any, b: any) => {
+      if (sortBy === 'severity') {
+        const getMaxSeverity = (file: any) => {
+          const severities = file.issues?.map((i: any) => {
+            const s = i.severity || i.impact || ''
+            if (s === 'critical') return 4
+            if (s === 'high') return 3
+            if (s === 'medium') return 2
+            return 1
+          }) || []
+          return Math.max(...severities, 0)
+        }
+        return getMaxSeverity(b) - getMaxSeverity(a)
+      } else if (sortBy === 'count') {
+        return (b.issues?.length || 0) - (a.issues?.length || 0)
+      }
+      return a.name.localeCompare(b.name)
+    })
+    
+    return filtered
+  }, [result, filterAgent, filterSeverity, filterType, searchQuery, sortBy])
+
+  // Calculate statistics for visualization
+  const getStatistics = () => {
+    const stats = {
+      total: getTotalIssues(),
+      critical: getIssuesSeverity().critical,
+      warning: getIssuesSeverity().warning,
+      info: getIssuesSeverity().info,
+      byAgent: getIssuesByAgent(),
+      byType: getIssuesByType()
+    }
+    return stats
+  }
+
   return (
     <div className="min-h-screen bg-background relative">
       <div className="fixed top-4 right-4 z-50 sm:absolute">
@@ -407,71 +523,318 @@ const PRReviewPage = memo(function PRReviewPage() {
         {/* Results */}
         {result && (
           <>
-            {/* Summary Stats Card */}
+            {/* Enhanced Summary Stats Card */}
             <Card className="mb-8">
               <CardContent className="p-6 sm:p-8">
-                <h3 className="text-xl sm:text-2xl font-bold mb-6 flex items-center gap-3">
-                  <TrendingUp className="h-6 w-6 text-primary" />
-                  Multiagentic Analysis Summary
-                </h3>
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-xl sm:text-2xl font-bold flex items-center gap-3">
+                    <BarChart3 className="h-6 w-6 text-primary" />
+                    Analysis Dashboard
+                  </h3>
+                  <Button
+                    asChild
+                    variant="outline"
+                    size="sm"
+                  >
+                    <a href={result.pr_url} target="_blank" rel="noopener noreferrer">
+                      View on GitHub
+                      <ExternalLink className="ml-2 h-4 w-4" />
+                    </a>
+                  </Button>
+                </div>
                 
+                {/* Main Stats Grid */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                  <div className="border rounded-lg p-4">
+                  <div className="border rounded-lg p-4 bg-card border-border hover:bg-accent/50 transition-colors">
                     <div className="text-sm font-medium text-muted-foreground mb-2">Total Issues</div>
-                    <div className="text-2xl sm:text-3xl font-bold">{getTotalIssues()}</div>
+                    <div className="text-2xl sm:text-3xl font-bold text-foreground">{getTotalIssues()}</div>
+                    <div className="text-xs text-muted-foreground mt-1">
+                      Across {result.files?.length || 0} files
+                    </div>
                   </div>
                   
-                  <div className="border rounded-lg p-4 border-destructive/50">
+                  <div className="border rounded-lg p-4 bg-card border-destructive/30 hover:bg-destructive/5 transition-colors">
                     <div className="text-sm font-medium text-muted-foreground mb-2">Critical</div>
-                    <div className="text-2xl sm:text-3xl font-bold text-destructive">{getIssuesSeverity().critical}</div>
+                    <div className="text-2xl sm:text-3xl font-bold text-destructive">
+                      {getIssuesSeverity().critical}
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-1">
+                      {getTotalIssues() > 0 
+                        ? Math.round((getIssuesSeverity().critical / getTotalIssues()) * 100) 
+                        : 0}% of total
+                    </div>
                   </div>
                   
-                  <div className="border rounded-lg p-4">
+                  <div className="border rounded-lg p-4 bg-card border-border hover:bg-accent/50 transition-colors">
                     <div className="text-sm font-medium text-muted-foreground mb-2">Warnings</div>
-                    <div className="text-2xl sm:text-3xl font-bold">{getIssuesSeverity().warning}</div>
+                    <div className="text-2xl sm:text-3xl font-bold text-foreground">
+                      {getIssuesSeverity().warning}
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-1">
+                      {getTotalIssues() > 0 
+                        ? Math.round((getIssuesSeverity().warning / getTotalIssues()) * 100) 
+                        : 0}% of total
+                    </div>
                   </div>
                   
-                  <div className="border rounded-lg p-4">
-                    <div className="text-sm font-medium text-muted-foreground mb-2">Files Analyzed</div>
-                    <div className="text-2xl sm:text-3xl font-bold">{result.files?.length || 0}</div>
+                  <div className="border rounded-lg p-4 bg-card border-border hover:bg-accent/50 transition-colors">
+                    <div className="text-sm font-medium text-muted-foreground mb-2">Info</div>
+                    <div className="text-2xl sm:text-3xl font-bold text-foreground">
+                      {getIssuesSeverity().info}
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-1">
+                      {getTotalIssues() > 0 
+                        ? Math.round((getIssuesSeverity().info / getTotalIssues()) * 100) 
+                        : 0}% of total
+                    </div>
                   </div>
                 </div>
 
-                {/* Agent Breakdown */}
+                {/* Severity Distribution Bar */}
+                {getTotalIssues() > 0 && (
+                  <div className="mb-6">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium">Severity Distribution</span>
+                      <span className="text-xs text-muted-foreground">
+                        {getIssuesSeverity().critical + getIssuesSeverity().warning + getIssuesSeverity().info} issues
+                      </span>
+                    </div>
+                    <div className="h-3 bg-muted rounded-full overflow-hidden flex">
+                      {getIssuesSeverity().critical > 0 && (
+                        <div 
+                          className="bg-red-500 h-full transition-all"
+                          style={{ width: `${(getIssuesSeverity().critical / getTotalIssues()) * 100}%` }}
+                          title={`Critical: ${getIssuesSeverity().critical}`}
+                        />
+                      )}
+                      {getIssuesSeverity().warning > 0 && (
+                        <div 
+                          className="bg-yellow-500 h-full transition-all"
+                          style={{ width: `${(getIssuesSeverity().warning / getTotalIssues()) * 100}%` }}
+                          title={`Warnings: ${getIssuesSeverity().warning}`}
+                        />
+                      )}
+                      {getIssuesSeverity().info > 0 && (
+                        <div 
+                          className="bg-blue-500 h-full transition-all"
+                          style={{ width: `${(getIssuesSeverity().info / getTotalIssues()) * 100}%` }}
+                          title={`Info: ${getIssuesSeverity().info}`}
+                        />
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Agent Performance */}
                 {result.summary?.total_agents > 0 && (
                   <div className="mt-6 pt-6 border-t">
-                    <h4 className="text-lg font-semibold mb-4">Agents Deployed</h4>
+                    <h4 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                      <Users className="h-5 w-5" />
+                      Agent Performance
+                    </h4>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                       {getAgentSummary().map((agent) => {
                         const Icon = agentIcons[agent.name] || Code
                         const colorClass = agentColors[agent.name] || 'text-gray-500'
                         const issueCount = agent.summary.total_issues || 0
+                        const critical = agent.summary.critical || agent.summary.high_severity || agent.summary.high_impact || 0
                         
                         return (
-                          <div key={agent.name} className="border rounded-lg p-3 flex items-center gap-2">
-                            <Icon className={`h-5 w-5 ${colorClass}`} />
-                            <div className="flex-1">
-                              <div className="text-xs font-medium">{agent.name.replace('Agent', '')}</div>
-                              <div className="text-sm font-bold">{issueCount} issues</div>
+                          <div 
+                            key={agent.name} 
+                            className={`border rounded-lg p-4 cursor-pointer transition-all hover:shadow-lg ${
+                              filterAgent === agent.name ? 'border-primary bg-primary/5' : ''
+                            }`}
+                            onClick={() => setFilterAgent(filterAgent === agent.name ? 'all' : agent.name)}
+                          >
+                            <div className="flex items-center gap-3 mb-2">
+                              <Icon className={`h-5 w-5 ${colorClass}`} />
+                              <div className="flex-1">
+                                <div className="text-sm font-semibold">{agent.name.replace('Agent', '').replace('agent', '')}</div>
+                                <div className="text-xs text-muted-foreground">
+                                  {critical > 0 && (
+                                    <span className="text-red-500 font-bold">{critical} critical</span>
+                                  )}
+                                </div>
+                              </div>
                             </div>
+                            <div className="text-2xl font-bold">{issueCount}</div>
+                            <div className="text-xs text-muted-foreground">issues found</div>
                           </div>
                         )
                       })}
                     </div>
                   </div>
                 )}
+
+                {/* Issue Types Breakdown */}
+                {Object.keys(getIssuesByType()).length > 0 && (
+                  <div className="mt-6 pt-6 border-t">
+                    <h4 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                      <PieChart className="h-5 w-5" />
+                      Issues by Type
+                    </h4>
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+                      {Object.entries(getIssuesByType()).map(([type, count]) => (
+                        <div
+                          key={type}
+                          className={`border rounded-lg p-3 cursor-pointer transition-all hover:shadow-md ${
+                            filterType === type ? 'border-primary bg-primary/5' : ''
+                          }`}
+                          onClick={() => setFilterType(filterType === type ? 'all' : type)}
+                        >
+                          <div className="text-sm font-medium capitalize">{type}</div>
+                          <div className="text-lg font-bold">{count}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
-            {/* PR Details Card */}
+            {/* Filters and Search */}
+            <Card className="mb-8">
+              <CardContent className="p-4">
+                <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
+                  {/* Search */}
+                  <div className="flex-1 w-full md:w-auto">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        placeholder="Search issues, files, descriptions..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="pl-10 pr-10"
+                      />
+                      {searchQuery && (
+                        <button
+                          onClick={() => setSearchQuery('')}
+                          className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                        >
+                          <X className="h-4 w-4 text-muted-foreground" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Filters */}
+                  <div className="flex gap-2 flex-wrap">
+                    <select
+                      value={filterAgent}
+                      onChange={(e) => setFilterAgent(e.target.value)}
+                      className="px-3 py-2 border rounded-md text-sm bg-background"
+                    >
+                      <option value="all">All Agents</option>
+                      {getAgentSummary().map((agent) => (
+                        <option key={agent.name} value={agent.name}>
+                          {agent.name.replace('Agent', '').replace('agent', '')}
+                        </option>
+                      ))}
+                    </select>
+
+                    <select
+                      value={filterSeverity}
+                      onChange={(e) => setFilterSeverity(e.target.value)}
+                      className="px-3 py-2 border rounded-md text-sm bg-background"
+                    >
+                      <option value="all">All Severities</option>
+                      <option value="critical">Critical</option>
+                      <option value="high">High</option>
+                      <option value="medium">Medium</option>
+                      <option value="low">Low</option>
+                    </select>
+
+                    <select
+                      value={filterType}
+                      onChange={(e) => setFilterType(e.target.value)}
+                      className="px-3 py-2 border rounded-md text-sm bg-background"
+                    >
+                      <option value="all">All Types</option>
+                      {getAllIssueTypes().map((type) => (
+                        <option key={type} value={type}>
+                          {type.charAt(0).toUpperCase() + type.slice(1)}
+                        </option>
+                      ))}
+                    </select>
+
+                    <select
+                      value={sortBy}
+                      onChange={(e) => setSortBy(e.target.value)}
+                      className="px-3 py-2 border rounded-md text-sm bg-background"
+                    >
+                      <option value="severity">Sort by Severity</option>
+                      <option value="count">Sort by Count</option>
+                      <option value="name">Sort by Name</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Active Filters */}
+                {(filterAgent !== 'all' || filterSeverity !== 'all' || filterType !== 'all' || searchQuery) && (
+                  <div className="mt-4 flex flex-wrap gap-2 items-center">
+                    <span className="text-sm text-muted-foreground">Active filters:</span>
+                    {filterAgent !== 'all' && (
+                      <Badge variant="secondary" className="gap-1">
+                        Agent: {filterAgent.replace('Agent', '').replace('agent', '')}
+                        <button onClick={() => setFilterAgent('all')}><X className="h-3 w-3" /></button>
+                      </Badge>
+                    )}
+                    {filterSeverity !== 'all' && (
+                      <Badge variant="secondary" className="gap-1">
+                        Severity: {filterSeverity}
+                        <button onClick={() => setFilterSeverity('all')}><X className="h-3 w-3" /></button>
+                      </Badge>
+                    )}
+                    {filterType !== 'all' && (
+                      <Badge variant="secondary" className="gap-1">
+                        Type: {filterType}
+                        <button onClick={() => setFilterType('all')}><X className="h-3 w-3" /></button>
+                      </Badge>
+                    )}
+                    {searchQuery && (
+                      <Badge variant="secondary" className="gap-1">
+                        Search: {searchQuery}
+                        <button onClick={() => setSearchQuery('')}><X className="h-3 w-3" /></button>
+                      </Badge>
+                    )}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setFilterAgent('all')
+                        setFilterSeverity('all')
+                        setFilterType('all')
+                        setSearchQuery('')
+                      }}
+                    >
+                      Clear all
+                    </Button>
+                  </div>
+                )}
+
+                {/* Results count */}
+                <div className="mt-4 text-sm text-muted-foreground">
+                  Showing {filteredFiles.reduce((sum: number, f: any) => sum + (f.issues?.length || 0), 0)} issues 
+                  in {filteredFiles.length} file{filteredFiles.length !== 1 ? 's' : ''}
+                  {filteredFiles.length !== (result.files?.length || 0) && (
+                    <span> (filtered from {result.files?.length || 0} total files)</span>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* PR Header */}
             <Card className="mb-8">
               <CardHeader className="border-b pb-6">
-                <div className="flex items-start gap-4 mb-4">
-                  <CheckCircle2 className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
+                <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
-                    <CardTitle className="text-2xl sm:text-3xl font-bold mb-3">
-                      {result.pr_title}
-                    </CardTitle>
+                    <div className="flex items-center gap-3 mb-3">
+                      <CheckCircle2 className="h-6 w-6 text-primary flex-shrink-0" />
+                      <CardTitle className="text-2xl sm:text-3xl font-bold">
+                        {result.pr_title}
+                      </CardTitle>
+                    </div>
                     <div className="flex flex-wrap gap-2 items-center">
                       <Badge variant="secondary">
                         <Clock className="mr-1.5 h-3 w-3" />
@@ -489,38 +852,63 @@ const PRReviewPage = memo(function PRReviewPage() {
                           {result.summary.total_agents} Agents
                         </Badge>
                       )}
+                      <Badge variant="outline">
+                        <Code className="mr-1.5 h-3 w-3" />
+                        {result.files?.length || 0} Files
+                      </Badge>
                     </div>
                   </div>
+                  <Button
+                    asChild
+                    variant="outline"
+                    size="sm"
+                  >
+                    <a href={result.pr_url} target="_blank" rel="noopener noreferrer">
+                      View on GitHub
+                      <ExternalLink className="ml-2 h-4 w-4" />
+                    </a>
+                  </Button>
                 </div>
-                
-                <Button
-                  asChild
-                  variant="outline"
-                  className="w-full sm:w-auto"
-                >
-                  <a href={result.pr_url} target="_blank" rel="noopener noreferrer">
-                    View Pull Request on GitHub
-                    <ExternalLink className="ml-2 h-4 w-4" />
-                  </a>
-                </Button>
               </CardHeader>
-
-              <CardContent className="pt-6">
-                {result.files && result.files.length > 0 ? (
-                  <div className="space-y-4">
-                    {result.files.map((file: any, i: number) => (
-                      <FileCard key={i} file={file} />
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-12">
-                    <CheckCircle2 className="h-12 w-12 text-primary mx-auto mb-4" />
-                    <h3 className="text-xl sm:text-2xl font-bold mb-2">All Clear!</h3>
-                    <p className="text-muted-foreground">No files with issues were found in this pull request.</p>
-                  </div>
-                )}
-              </CardContent>
             </Card>
+
+            {/* Filtered Files */}
+            {filteredFiles.length > 0 ? (
+              <div className="space-y-4">
+                {filteredFiles.map((file: any, i: number) => (
+                  <FileCard key={i} file={file} />
+                ))}
+              </div>
+            ) : result.files && result.files.length > 0 ? (
+              <Card className="mb-8">
+                <CardContent className="p-12 text-center">
+                  <Filter className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-xl font-bold mb-2">No issues match your filters</h3>
+                  <p className="text-muted-foreground mb-4">
+                    Try adjusting your filters to see more results
+                  </p>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setFilterAgent('all')
+                      setFilterSeverity('all')
+                      setFilterType('all')
+                      setSearchQuery('')
+                    }}
+                  >
+                    Clear All Filters
+                  </Button>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card className="mb-8">
+                <CardContent className="p-12 text-center">
+                  <CheckCircle2 className="h-12 w-12 text-primary mx-auto mb-4" />
+                  <h3 className="text-xl sm:text-2xl font-bold mb-2">All Clear!</h3>
+                  <p className="text-muted-foreground">No files with issues were found in this pull request.</p>
+                </CardContent>
+              </Card>
+            )}
           </>
         )}
       </div>
