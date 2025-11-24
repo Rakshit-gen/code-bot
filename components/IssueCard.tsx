@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { FileCode, Hash, Zap } from 'lucide-react'
+import { FileCode, Hash, Zap, Shield, Users } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -12,6 +12,9 @@ interface Issue {
   type?: string
   description: string
   suggestion?: string
+  detected_by?: string
+  severity?: string
+  impact?: string
 }
 
 interface IssueCardProps {
@@ -49,6 +52,27 @@ export default function IssueCard({ issue }: IssueCardProps) {
             <Badge variant="outline" className="bg-amber-500/20 text-amber-300 border-amber-500/40 uppercase text-xs font-bold px-3 py-1.5">
               <Zap size={14} strokeWidth={2.5} className="mr-2" />
               {issue.type}
+            </Badge>
+          )}
+          {(issue.severity || issue.impact) && (
+            <Badge 
+              variant="outline" 
+              className={`uppercase text-xs font-bold px-3 py-1.5 ${
+                (issue.severity || issue.impact) === 'critical' || (issue.severity || issue.impact) === 'high'
+                  ? 'bg-red-500/20 text-red-300 border-red-500/40'
+                  : (issue.severity || issue.impact) === 'medium'
+                  ? 'bg-yellow-500/20 text-yellow-300 border-yellow-500/40'
+                  : 'bg-blue-500/20 text-blue-300 border-blue-500/40'
+              }`}
+            >
+              <Shield size={14} strokeWidth={2.5} className="mr-2" />
+              {issue.severity || issue.impact}
+            </Badge>
+          )}
+          {issue.detected_by && (
+            <Badge variant="outline" className="bg-purple-500/20 text-purple-300 border-purple-500/40 uppercase text-xs font-bold px-3 py-1.5">
+              <Users size={14} strokeWidth={2.5} className="mr-2" />
+              {issue.detected_by.replace('Agent', '')}
             </Badge>
           )}
         </div>

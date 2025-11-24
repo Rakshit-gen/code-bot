@@ -1,10 +1,12 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Homepage from '@/components/HomePage'
+import CodebaseAnalyzerPage from '@/components/CodeBaseAnalyzer'
+import { useRouter } from 'next/navigation'
 
-export default function Home() {
+export default function AnalyzePage() {
   const [isMobile, setIsMobile] = useState(false)
+  const router = useRouter()
 
   useEffect(() => {
     const userAgent = navigator.userAgent || navigator.vendor || (window as any).opera
@@ -29,5 +31,6 @@ export default function Home() {
     )
   }
 
-  return <Homepage />
+  return <CodebaseAnalyzerPage onBack={() => router.push('/')} />
 }
+

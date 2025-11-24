@@ -1,9 +1,9 @@
 "use client";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "motion/react";
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useMemo, memo } from "react";
 
-export const BackgroundBeamsWithCollision = ({
+export const BackgroundBeamsWithCollision = memo(({
   children,
   className,
 }: {
@@ -13,7 +13,7 @@ export const BackgroundBeamsWithCollision = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const parentRef = useRef<HTMLDivElement>(null);
 
-  const beams = [
+  const beams = useMemo(() => [
     {
       initialX: 10,
       translateX: 10,
@@ -64,7 +64,7 @@ export const BackgroundBeamsWithCollision = ({
       delay: 2,
       className: "h-6",
     },
-  ];
+  ], []);
 
   return (
     <div
@@ -95,9 +95,11 @@ export const BackgroundBeamsWithCollision = ({
       ></div>
     </div>
   );
-};
+});
 
-const CollisionMechanism = React.forwardRef<
+BackgroundBeamsWithCollision.displayName = "BackgroundBeamsWithCollision";
+
+const CollisionMechanism = memo(React.forwardRef<
   HTMLDivElement,
   {
     containerRef: React.RefObject<HTMLDivElement>;
@@ -127,6 +129,9 @@ const CollisionMechanism = React.forwardRef<
   const [cycleCollisionDetected, setCycleCollisionDetected] = useState(false);
 
   useEffect(() => {
+    if (cycleCollisionDetected) return;
+
+    let rafId: number;
     const checkCollision = () => {
       if (
         beamRef.current &&
@@ -136,9 +141,9 @@ const CollisionMechanism = React.forwardRef<
       ) {
         const beamRect = beamRef.current.getBoundingClientRect();
         const containerRect = containerRef.current.getBoundingClientRect();
-        const parentRect = parentRef.current.getBoundingClientRect();
 
         if (beamRect.bottom >= containerRect.top) {
+          const parentRect = parentRef.current.getBoundingClientRect();
           const relativeX =
             beamRect.left - parentRect.left + beamRect.width / 2;
           const relativeY = beamRect.bottom - parentRect.top;
@@ -151,13 +156,17 @@ const CollisionMechanism = React.forwardRef<
             },
           });
           setCycleCollisionDetected(true);
+          return;
         }
       }
+      rafId = requestAnimationFrame(checkCollision);
     };
 
-    const animationInterval = setInterval(checkCollision, 50);
+    rafId = requestAnimationFrame(checkCollision);
 
-    return () => clearInterval(animationInterval);
+    return () => {
+      if (rafId) cancelAnimationFrame(rafId);
+    };
   }, [cycleCollisionDetected, containerRef]);
 
   useEffect(() => {
@@ -200,9 +209,10 @@ const CollisionMechanism = React.forwardRef<
           repeatDelay: beamOptions.repeatDelay || 0,
         }}
         className={cn(
-          "absolute left-0 top-20 m-auto h-14 w-px rounded-full bg-gradient-to-t from-indigo-500 via-purple-500 to-transparent",
+          "absolute left-0 top-20 m-auto h-14 w-px rounded-full bg-gradient-to-t from-indigo-500 via-purple-500 to-transparent will-change-transform",
           beamOptions.className
         )}
+        style={{ transform: 'translateZ(0)' }}
       />
       <AnimatePresence>
         {collision.detected && collision.coordinates && (
@@ -219,18 +229,18 @@ const CollisionMechanism = React.forwardRef<
       </AnimatePresence>
     </>
   );
-});
+}));
 
 CollisionMechanism.displayName = "CollisionMechanism";
 
-const Explosion = ({ ...props }: React.HTMLProps<HTMLDivElement>) => {
-  const spans = Array.from({ length: 20 }, (_, index) => ({
+const Explosion = memo(({ ...props }: React.HTMLProps<HTMLDivElement>) => {
+  const spans = useMemo(() => Array.from({ length: 20 }, (_, index) => ({
     id: index,
     initialX: 0,
     initialY: 0,
     directionX: Math.floor(Math.random() * 80 - 40),
     directionY: Math.floor(Math.random() * -50 - 10),
-  }));
+  })), []);
 
   return (
     <div {...props} className={cn("absolute z-50 h-2 w-2", props.className)}>
@@ -256,4 +266,6 @@ const Explosion = ({ ...props }: React.HTMLProps<HTMLDivElement>) => {
       ))}
     </div>
   );
-};
+});
+
+Explosion.displayName = "Explosion";

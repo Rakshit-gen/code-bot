@@ -1,49 +1,42 @@
-'use client'
+"use client"
 
-import { useState } from 'react'
+import { memo } from 'react'
+import Link from 'next/link'
 import { GitPullRequest, ArrowRight } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
 
-interface CTACardProps {
-  onClick: () => void
-}
-
-export default function CTACard({ onClick }: CTACardProps) {
-  const [hover, setHover] = useState(false)
-  
+const CTACard = memo(function CTACard() {
   return (
-    <Card
-      onClick={onClick}
-      className="relative bg-gradient-to-br from-slate-900/95 to-slate-800/80 backdrop-blur-xl border border-slate-700/10 rounded-3xl shadow-[0_30px_80px_-10px_rgba(0,0,0,0.6)] hover:-translate-y-2 hover:scale-[1.02] transition-all duration-400 cursor-pointer overflow-hidden"
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-    >
-      <div className={`absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20 transition-opacity duration-400 pointer-events-none ${hover ? 'opacity-100' : 'opacity-0'}`} />
-      
-      <CardHeader className="relative z-10 text-center pt-16">
-        <div className="inline-flex p-8 bg-gradient-to-br from-blue-500/30 to-purple-500/30 rounded-3xl mb-8 border border-blue-500/40 shadow-[0_0_60px_rgba(59,130,246,0.4)] mx-auto w-fit">
-          <GitPullRequest size={64} className="text-blue-400" strokeWidth={2.5} />
+    <Card className="group cursor-pointer transition-all hover:shadow-lg hover:border-primary/50 h-full flex flex-col">
+      <CardHeader className="text-center pb-4">
+        <div className="inline-flex p-3 rounded-lg bg-primary/10 mb-4 group-hover:bg-primary/20 transition-colors">
+          <GitPullRequest className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
         </div>
-        
-        <CardTitle className="text-4xl font-semibold bg-gradient-to-r from-white via-blue-400 via-purple-400 to-white bg-clip-text text-transparent mb-4">
-          Start Reviewing PRs
+        <CardTitle className="text-2xl sm:text-3xl font-semibold">
+          Review Pull Requests
         </CardTitle>
       </CardHeader>
       
-      <CardContent className="relative z-10 text-center pb-16">
-        <CardDescription className="text-slate-400 text-xl mb-8 max-w-2xl mx-auto">
-          Click here to analyze your pull requests and get instant AI-powered feedback
+      <CardContent className="flex flex-col flex-grow text-center">
+        <CardDescription className="text-base sm:text-lg mb-6">
+          Analyze your pull requests and get instant AI-powered feedback
         </CardDescription>
         
-        <div className="inline-flex items-center gap-3 text-blue-400 text-lg font-bold">
-          Analyze PR Now 
-          <ArrowRight 
-            size={24} 
-            strokeWidth={2.5} 
-            className={`transition-transform duration-300 ${hover ? 'translate-x-2' : ''}`}
-          />
-        </div>
+        <Button 
+          asChild
+          variant="outline" 
+          className="mt-auto group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
+        >
+          <Link href="/review">
+            Analyze PR
+            <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+          </Link>
+        </Button>
       </CardContent>
     </Card>
   )
-}
+})
+
+export default CTACard
+

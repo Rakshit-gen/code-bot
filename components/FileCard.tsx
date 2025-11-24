@@ -12,11 +12,15 @@ interface Issue {
   type?: string
   description: string
   suggestion?: string
+  detected_by?: string
+  severity?: string
+  impact?: string
 }
 
 interface FileData {
   name: string
   issues?: Issue[]
+  agent_breakdown?: Record<string, number>
 }
 
 interface FileCardProps {
@@ -43,10 +47,21 @@ export default function FileCard({ file }: FileCardProps) {
           </CardTitle>
           
           {file.issues && file.issues.length > 0 && (
-            <Badge className="bg-gradient-to-r from-red-500/20 to-red-600/20 text-red-300 border border-red-500/30 px-4 py-2 text-sm font-extrabold">
-              <ShieldAlert size={16} strokeWidth={2.5} className="mr-2" />
-              {file.issues.length} {file.issues.length === 1 ? 'Issue' : 'Issues'}
-            </Badge>
+            <div className="flex items-center gap-2">
+              <Badge className="bg-gradient-to-r from-red-500/20 to-red-600/20 text-red-300 border border-red-500/30 px-4 py-2 text-sm font-extrabold">
+                <ShieldAlert size={16} strokeWidth={2.5} className="mr-2" />
+                {file.issues.length} {file.issues.length === 1 ? 'Issue' : 'Issues'}
+              </Badge>
+              {file.agent_breakdown && Object.keys(file.agent_breakdown).length > 0 && (
+                <div className="flex gap-1">
+                  {Object.entries(file.agent_breakdown).map(([agent, count]) => (
+                    <Badge key={agent} variant="outline" className="text-xs">
+                      {agent.replace('Agent', '')}: {count}
+                    </Badge>
+                  ))}
+                </div>
+              )}
+            </div>
           )}
         </div>
       </CardHeader>

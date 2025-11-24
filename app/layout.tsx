@@ -1,6 +1,6 @@
 import "./globals.css"
 import type { Metadata } from "next"
-import { BackgroundBeamsWithCollision } from "@/components/ui/background-beams-with-collision"
+import { ThemeProvider } from "@/components/theme-provider"
 
 export const metadata: Metadata = {
   title: "Aegis",
@@ -12,25 +12,13 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html
-      lang="en"
-      style={{
-        background: "linear-gradient(135deg, #000000 0%, #1a1a2e 50%, #000000 100%)",
-        minHeight: "100%",
-      }}
-    >
-
-      <body
-        className="min-h-screen text-white bg-transparent"
-        style={{
-          fontFamily: "Inter, sans-serif",
-          overflowX: "hidden",
-        }}
-      >
-        <BackgroundBeamsWithCollision>
+    <html lang="en" suppressHydrationWarning>
+      <body className="min-h-screen antialiased">
+        <ThemeProvider defaultTheme="system" storageKey="aegis-theme">
           {children}
-        </BackgroundBeamsWithCollision>
+        </ThemeProvider>
       </body>
     </html>
   )
 }
+
